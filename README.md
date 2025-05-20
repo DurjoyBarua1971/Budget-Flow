@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Budget Tracker Web Application
 
-## Getting Started
+A personal finance application to help users track their income and expenses, categorize transactions, and visualize spending patterns over time.
 
-First, run the development server:
+## Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This budget tracker allows users to:
+
+- Record income and expense transactions
+- Categorize transactions with custom categories and icons
+- View historical spending data by month and year
+- Set preferred currency for transactions
+- Visualize financial data through charts and reports
+
+## Database Schema
+
+### User
+
+Stores user identification, managed by Clerk authentication
+
+```
+Table User {
+  id string [primary key]
+  // Persisted on Clerk
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### UserSettings
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Stores user preferences
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+Table UserSettings {
+  currency string
+  userId string [primary key]
+}
+```
 
-## Learn More
+### Category
 
-To learn more about Next.js, take a look at the following resources:
+Custom categories for transactions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+Table Category {
+  createdAt timestamp
+  name string
+  icon string
+  type string
+  userId string
+  // unique([name, userId, type])
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Transaction
 
-## Deploy on Vercel
+Individual financial transactions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+Table Transaction {
+  id string [primary key]
+  createdAt timestamp
+  updatedAt timestamp
+  amount number
+  description string
+  date timestamp
+  userId string
+  type string
+  category string
+  categoryIcon string
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### MonthHistory
+
+Aggregated daily financial data
+
+```
+Table MonthHistory {
+  userId string
+  day int
+  month int
+  year int
+  income number
+  expense number
+}
+```
+
+### YearHistory
+
+Aggregated monthly financial data
+
+```
+Table YearHistory {
+  userId string
+  month int
+  year int
+  income number
+  expense number
+}
+```
+
+### Entity Relationships
+
+```
+User.id < UserSettings.userId
+User.id < Category.userId
+User.id < Transaction.userId
+User.id < MonthHistory.userId
+User.id < YearHistory.userId
+```

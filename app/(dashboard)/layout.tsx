@@ -9,7 +9,3 @@ export default function layout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-/*
-https://youtu.be/nANLXwxZxks?feature=shared&t=1564
-*/
